@@ -1,0 +1,9 @@
+# Ignore sensitive files
+service_account_key.json
+__pycache__/
+*.pyc
+.env
+*.log
+csv_files/
+processed/
+upload_log_*.txt
