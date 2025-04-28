@@ -131,6 +131,16 @@ A Looker Studio dashboard was developed based on the masked views, allowing user
 - Filter by masked product, masked store, load dates, and regional segmentation
 - Safely visualize insights without exposing sensitive product or store information
 
+### Live Dashboard
+
+[View the Live Looker Studio Dashboard Here](https://lookerstudio.google.com/reporting/8a904ccb-7bf5-470e-ab30-c7af00dce799)
+
+### Dashboard Preview
+
+![Looker Studio Dashboard](docs/dashboard_overview.png)
+
+
+
 ---
 
 ## Skills and Concepts Demonstrated
