@@ -3,15 +3,20 @@ from google.oauth2 import service_account
 import pandas as pd
 import os
 import shutil
+import yaml
 
 # --- CONFIGURATION ---
-PROJECT_ID = "b2b-retail-bigquery"                      # <<<< replace with your GCP project ID
-DATASET_ID = "tivoli_dataset"                          # <<<< replace with your BigQuery dataset
-SERVICE_ACCOUNT_FILE = "service_account_key.json"
+# Load configuration
+with open('config.yaml') as config_file:
+    config = yaml.safe_load(config_file)
+
+PROJECT_ID = config["project_id"]
+DATASET_ID = config["dataset_id"]
+SERVICE_ACCOUNT_FILE = config["service_account_file"]
 CSV_FOLDER = "csv_files"
 PROCESSED_FOLDER = "processed"
 TARGET_TABLE = "sales"
-LOCATION = "US"
+LOCATION = config["location"]
 UPLOAD_LOG = "upload_log_sales.txt"
 # ----------------------
 
@@ -23,12 +28,12 @@ client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 dataset_ref = bigquery.Dataset(f"{PROJECT_ID}.{DATASET_ID}")
 try:
     client.get_dataset(dataset_ref)
-    print(f"✅ Dataset '{DATASET_ID}' found.")
+    print(f"Dataset '{DATASET_ID}' found.")
 except Exception:
     dataset = bigquery.Dataset(dataset_ref)
     dataset.location = LOCATION
     client.create_dataset(dataset)
-    print(f"📁 Created dataset '{DATASET_ID}'.")
+    print(f"Created dataset '{DATASET_ID}'.")
 
 # Ensure processed folder exists
 if not os.path.exists(PROCESSED_FOLDER):
@@ -47,16 +52,16 @@ new_files = [
 ]
 
 if not new_files:
-    print("⚠️ No new files to upload.")
+    print("No new files to upload.")
 else:
-    print(f"📂 New files to upload: {new_files}")
+    print(f"New files to upload: {new_files}")
 
     for filename in new_files:
         file_path = os.path.join(CSV_FOLDER, filename)
         full_table_id = f"{PROJECT_ID}.{DATASET_ID}.{TARGET_TABLE}"
-        print(f"\n📤 Checking and uploading {filename} to {full_table_id}...")
+        print(f"\n Checking and uploading {filename} to {full_table_id}...")
 
-        # 💡 Read CSV with encoding handling
+        # Read CSV with encoding handling
         try:
             df = pd.read_csv(file_path, encoding="latin1")
             # Fix column names that contain special characters
@@ -65,10 +70,10 @@ else:
                 "VENTA_PUBLICO($)": "VENTA_PUBLICO"
 }, inplace=True)
         except Exception as read_error:
-            print(f"❌ Error reading {filename}: {read_error}")
+            print(f"Error reading {filename}: {read_error}")
             continue
 
-        # 💡 Expected columns
+        # Expected columns
         expected_columns = [
             "PERIODO",
             "COD_CENCOSUD",
@@ -96,15 +101,15 @@ else:
         ]
 
 
-        # 💡 Validation step
+        # Validation step
         if list(df.columns) != expected_columns:
-            print(f"❌ Column mismatch in {filename}!")
+            print(f"Column mismatch in {filename}!")
             print(f"    Expected: {expected_columns}")
             print(f"    Found:    {list(df.columns)}")
-            print(f"🚫 Skipping upload for {filename}.\n")
+            print(f"Skipping upload for {filename}.\n")
             continue  # Skip this file and move to the next one
 
-        # 💡 Define explicit schema
+        # Define explicit schema
         schema = [
             bigquery.SchemaField("PERIODO", "DATE", mode="REQUIRED"),
             bigquery.SchemaField("COD_CENCOSUD", "STRING", mode="REQUIRED"),
@@ -153,8 +158,8 @@ else:
             # Move uploaded file to /processed
             shutil.move(file_path, os.path.join(PROCESSED_FOLDER, filename))
 
-            print(f"✅ Uploaded & moved to /processed: {filename}\n")
+            print(f"Uploaded & moved to /processed: {filename}\n")
 
         except Exception as e:
-            print(f"❌ Failed to upload {filename}: {e}\n")
+            print(f"Failed to upload {filename}: {e}\n")
 

@@ -7,3 +7,5 @@ __pycache__/
 csv_files/
 processed/
 upload_log_*.txt
+config.yaml
+
