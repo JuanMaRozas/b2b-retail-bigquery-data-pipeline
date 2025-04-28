@@ -146,6 +146,6 @@ A Looker Studio dashboard was developed based on the masked views, allowing user
 
 ## About
 
-Created by Juan Manuel Rozas Andaur, Ph.D.
-Chief Data & Strategy Executive | CDO | CSO | Digital Transformation Leader
+Created by Juan Manuel Rozas Andaur, Ph.D. \
+Chief Data & Strategy Executive | CDO | CSO | Digital Transformation Leader \
 [Visit Portfolio](https://jmrozas.com)
